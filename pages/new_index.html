@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Patient Details</title>
+	<link href="styles.css" rel="stylesheet" type="text/css" />
+	<script src="jquery-3.3.1.min.js"></script>
+	<script src="jquery-ui.js"></script>
+	<script src="/scripts/script.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="scripts/table.js"></script>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script>
+		$(document).ready(function () {
+
+			document.getElementById("patientThresholds").style.display = "none";
+			document.getElementById("personal").style.color = "white";
+			document.getElementById("personal").style.background = "grey";
+
+			var sect = 1;
+			var tick = 0;
+			var time = setInterval(timeFunction, 100);
+			var flashTimer = setInterval(flashTimerFunction, 700);
+
+			function timeFunction() {
+				$('#patient').animate({
+					"opacity": "1"
+				}, 350);
+				if (sect == 1) {
+					clearInterval(time);
+				}
+				sect++;
+			}
+
+			function flashTimerFunction() {
+				if (tick == 0) {
+					$('#patientOrientation').animate({
+						"background-color": "red"
+					}, 700);
+					tick = 1;
+				} else {
+					$('#patientOrientation').animate({
+						"background-color": "#Ffffff"
+					}, 700);
+					tick = 0;
+				}
+			}
+
+			$('#button').click(function () {
+				$('#patientResult').animate({
+					"opacity": "1"
+				}, 400);
+			});
+
+			$('#button2').click(function () {
+				var upperHR = document.getElementById("upperHR").value;
+				var lowerHR = document.getElementById("lowerHR").value;
+
+				$('#thresholdResult, .line').animate({
+					"opacity": "1"
+				}, 400);
+
+				if (upperHR > 180) {
+					$('#line1').animate({
+						"top": "156"
+					})
+				} else {
+					$('#line1').animate({
+						"top": 337 - upperHR
+					}, 400);
+				};
+
+				if (lowerHR >= 0) {
+					$('#line2').animate({
+						"top": 396 - lowerHR
+					}, 400);
+				};
+
+			});
+
+			$('#return').click(function () {
+				window.location = 'index.php';
+			});
+
+
+		});
+	</script>
+</head>
+
+<body>
+
+	<script language="JavaScript">
+		function showPersonal() {
+			document.getElementById("thresholdResult").style.opacity = "0";
+			document.getElementById("patientThresholds").style.display = "none";
+			document.getElementById("patientForm").style.display = "block";
+			document.getElementById("personal").style.color = "white";
+			document.getElementById("personal").style.background = "grey";
+			document.getElementById("thresholds").style.color = "grey";
+			document.getElementById("thresholds").style.background = "white";
+		}
+
+		function showThresholds() {
+			document.getElementById("patientResult").style.opacity = "0";
+			document.getElementById("patientForm").style.display = "none";
+			document.getElementById("patientThresholds").style.display = "block"
+			document.getElementById("personal").style.color = "grey";
+			document.getElementById("personal").style.background = "white";
+			document.getElementById("thresholds").style.color = "white";
+			document.getElementById("thresholds").style.background = "grey";
+		}
+
+		function showPersonalInput() {
+
+			var g = (document.getElementById("gender").value);
+			var a = (document.getElementById("age").value);
+			var h = (document.getElementById("height").value);
+			var w = (document.getElementById("weight").value);
+			document.getElementById('patientResult').innerHTML = g + "</br>" + a + "</br>" + h + "</br>" + w;
+
+		}
+
+		function showThresholdInput() {
+
+			var hrU = (document.getElementById("upperHR").value);
+			var hrL = (document.getElementById("lowerHR").value);
+			var rrU = (document.getElementById("upperRR").value);
+			var rrL = (document.getElementById("lowerRR").value);
+			document.getElementById('thresholdResult').innerHTML = hrU + "</br>" + hrL + "</br>" + rrU + "</br>" + rrL;
+
+		}
+
+		function createLine() {
+			console.log(document.getElementById("upperHR").value)
+		}
+	</script>
+	<script>
+		//Script for running and creating charts
+		var chart = realTimeLineChart();
+		var chart2 = realTimeLineChart();
+		var chart3 =realTimeLineChart();
+		var lineArray = [];
+		var lineArray2 = [];
+		
+		document.addEventListener("DOMContentLoaded", function () {
+		  seedData(lineArray, 500);
+		  window.setInterval(function () {
+			updateData(lineArray, chart, '#chart1', 500);
+		  }, 10);
+		  seedData(lineArray2, 30);
+		  window.setInterval(function (){
+			updateTemp(lineArray2, chart2, '#chart2');
+		  }, 200);
+		  d3.select("#chart1").datum(lineArray).call(chart);
+		  
+		  d3.select("#chart2").datum(lineArray2).call(chart2);
+		  d3.select(window).on('resize', resize);
+		  
+		});
+	  </script>
+	<div id="stage2">
+		<div id="patient">
+			<p class="graphLabel" id="ECG_xlabel">Time</p>
+			<p class="graphLabel" id="ECG_ylabel">Millivolts</p>
+			<p class="graphLabel" id="HRRR_xlabel"></p>
+			<p class="graphLabel" id="HRRR_ylabel"></p>
+			<button id='return'>Return</button>
+			<p id='specialist'>Condition: <strong>Dementia</strong>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Status: <strong>Not very good</strong></p>
+			<p id='status'>Specialist: Malika <strong>Thorpe </strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Physician:
+				Finnian<strong>Townsend</strong></p>
+			<img class="sectionAvatar" src="images/avatar1.png">
+			<div id='graphBackground'></div>
+			<div id="chart-container">
+				<div class="chart" id="chart1"></div>
+			</div>
+			<div id="patientOrientation">
+				<img src="images/human6.png">
+			</div>
+			<p id="patientName"><strong>CHARLES</strong>, Lily</p>
+			<p id="patientRoom">Room 1</p>
+			<p id="patientBed">Bed 2</p>
+			<p id="patientDoctor">Dr. Christopher White</p>
+			<table class="patientStatss">
+				<thead id="head">
+					<tr>
+						<th>Heart Rate</th>
+						<th>Respitory Rate</th>
+						<th>Temperature</th>
+						<th>Systolic Blood Pressure</th>
+						<th>Diastolic Blood Pressure</th>
+						<th>Blood Oxygenation</th>
+						<th>EWSS</th>
+						<th>Trajectory</th>
+					</tr>
+				</thead>
+				<tbody id="body">
+					<tr>
+						<th>80</th>
+						<th>32</th>
+						<th>37</th>
+						<th>123</th>
+						<th>1</th>
+						<th>1</th>
+						<th>0</th>
+						<th>1</th>
+					</tr>
+				</tbody>
+			</table>
+
+			<div id="forms">
+				<div id="patientBMI">
+					<div id="toggle">
+						<input type="submit" class="toggleForm" value="Personal" id=personal onclick="showPersonal();">
+						<input type="submit" class="toggleForm" value="Thresholds" id=thresholds
+							onclick="showThresholds();">
+					</div>
+					<form name="patientForm" id="patientForm">
+						<p><u> Patient Information </u></p>
+
+						<input type="text" name="message" id="gender" placeholder="Enter Patient Gender" />
+						<input type="text" name="message" id="age" placeholder="Enter Patient Age" />
+						<input type="text" name="height" id="height" placeholder="Enter Patient Height (cm)" />
+						<input type="text" name="weight" id="weight" placeholder="Enter Patient Weight (kg)" />
+						<input type="button" id="button" onclick="showPersonalInput();" value="Submit" />
+					</form>
+				</div>
+
+				<div id="patientThresholds">
+					<form name="patientThresholds" id="patientThresholds">
+						<p><u> Heart Rate Threshold</u></p>
+						<input type="text" id="upperHR" class="hrThresh" placeholder="Upper" />
+						<input type="text" id="lowerHR" class="hrThresh" placeholder="Lower" />
+						<p><u> Respiration Rate Threshold</u></p>
+						<input type="text" id="upperRR" class="rrThresh" placeholder="Upper" />
+						<input type="text" id="lowerRR" class="rrThresh" placeholder="Lower" />
+						<input type="button" id="button2" onclick="showThresholdInput();" value="Submit">
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="line" id="line1"></div>
+		<div class="line" id="line2"></div>
+		<p id="patientResult"></p>
+		<p id="thresholdResult"></p>
+	</div>
+</body>
+
+</html>

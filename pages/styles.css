@@ -1,0 +1,100 @@
+div#chart-container {
+    position: absolute;
+    top: 0px;
+    left: 500px;
+    width: 270px;
+    height: 130px;
+    overflow: hidden;
+    background-color: lightgrey;
+}
+
+#chart1 {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.clickArea{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+.section{
+    position: absolute;
+    width: 1000px;
+    height: 130px;
+    margin-left:0;
+    margin-top: 10px;
+    background-color: lightpink;
+}
+#buttons{
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    width:auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#stage{
+    position: relative;
+    margin:auto;
+    width:1400px;
+}
+
+#section1 {
+	margin-top: 10px;
+}
+#section2 {
+	margin-top: 150px;
+}
+#section3 {
+	margin-top: 290px; 
+}
+#section4 {
+	margin-top: 430px; 
+}
+#section5 {
+	margin-top: 570px; 
+}
+#section6 {
+	margin-top: 710px; 
+}
+#section7 {
+	margin-top: 850px; 
+}
+#section8 {
+	margin-top: 990px; 
+}
+#section9 {
+	margin-top: 1130px; 
+}
+#section10 {
+	margin-top: 1270px; 
+}
+#section11 {
+	margin-top: 1410px; 
+}
+
+.patientName {
+	position: absolute;
+	width: auto;
+	font-size: 32px;
+	top: -22px;
+	left: 140px;
+    cursor: pointer;
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
