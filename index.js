@@ -20,11 +20,11 @@ io.on('connection', function (socket) {
 
 var server = dgram.createSocket('udp4');
 var data = 'E';
-var ipAdd = "10.83.22.123";
+//var ipAdd = "10.83.22.123";
 var port = 1000;
-//var ipAdd = 'localhost';
+var ipAdd = 'localhost';
 var handshake = 'S';
-/*
+
 // Error handler
 server.on('error', function (error) {
   console.log("Error has occurred: " + error);
@@ -40,20 +40,27 @@ server.on('listening', function () {
 //When server receives a message.
 server.on('message', function (message, rinfo) {
   console.log("Server: received " + message.toString() + " from " + rinfo.address + ":" + rinfo.port);
-  for (var x = 0; x < 10000; x++){
-    server.send(x.toString(), rinfo.port, rinfo.address, function (error) {
+  var counter = 0;
+  
+  var i = setInterval(function(){
+    var signal = "#E"+counter.toString()+"#T"+counter.toString()+"#B"+counter.toString();
+    server.send(signal, rinfo.port, rinfo.address, function (error) {
       if (error) {
         console.log("error: " + error);
       } else {
         console.log("Server: Data sent to " + rinfo.address + ":" + rinfo.port);
       }
     });
-  };
 
+  counter++;
+  if(counter === 100000) {
+    clearInterval(i);
+  }
+  }, 80);
 });
 
 server.bind(port);
-*/
+
 //------------------------------------------Client Set up----------------------------
 var client = dgram.createSocket('udp4');
 var regex = new RegExp(/^ET/);
@@ -71,7 +78,7 @@ client.on('message', function (msg, info) {
   //console.log('regex is working');
   if (ecgRegex.test(string)){
     result = string.match(ecgRegex);
-    io.emit('ECG',result[0]);
+    io.emit('ECG',parseInt(result[0]));
     console.log('Trying to extract ECG: '+result[0]);
   };
   if (tempRegex.test(string)){

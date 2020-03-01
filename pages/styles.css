@@ -20,6 +20,7 @@ div#chart-container {
     height: 100%;
     position: absolute;
 }
+
 .section{
     position: absolute;
     width: 1000px;
@@ -28,6 +29,7 @@ div#chart-container {
     margin-top: 10px;
     background-color: lightpink;
 }
+
 #buttons{
     position: absolute;
     right: 0px;
@@ -35,13 +37,15 @@ div#chart-container {
     width:auto;
 }
 
+table{
+    position: absolute;
+    bottom: 0px;
+    border: solid 1px black;
+}
 
-
-
-
-
-
-
+th, td{
+    border: solid 1px black;
+}
 
 
 

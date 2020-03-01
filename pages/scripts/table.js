@@ -20,13 +20,12 @@ function seedData(ARRAY, MAX_LENGTH, vitals) {
   }
 }
 
-function updateData(array, chart, tag, data) {
+function updateECG(array, chart, tag, data) {
   var now = new Date();
   var lineData = {
     time: now,
     ECG: (parseInt(data/3)),
-    TEMP: randomNumberBounds(0,50),
-    //z: 0
+    //TEMP: randomNumberBounds(0,50),
   };
   //Necessary to remove old data in the array. Starts removing when over 500 entries in the array.
   array.push(lineData);
@@ -40,9 +39,7 @@ function updateTemp(array, chart, tag, data) {
   var now = new Date();
    var lineData = {
     time: now,
-    //ECG: 0,
     TEMP: data,
-    //z: randomNumberBounds(0,10)
     };
   array.push(lineData);
   if (array.length > 500) {
@@ -56,8 +53,6 @@ function updateResp(array, chart, tag, data) {
   var now = new Date();
     var lineData = {
     time: now,
-    //ECG: 0,
-    //T: T,
     RESP: (parseInt(data/3))
     };
   array.push(lineData);

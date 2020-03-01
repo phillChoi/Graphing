@@ -1,221 +1,284 @@
-<!--<!DOCTYPE html>
-<html>
-  <head>
-    <title>Realtime Data Line Graph</title>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <meta charset='utf-8' />
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <style>
-    body {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    }
-    #chart {
-      max-width: 1000px;
-      max-height: 400px;
-    }
-    </style>
-  </head>
-  <body>
-    <div id="chart"></div>
-    <script src="/scripts/script.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-    var socket = io.connect('http://localhost:5000');
-    var value = 0;
-    
-    
-    var lineArr = [];
-    var MAX_LENGTH = 100;
-    var duration = 500;
-    var chart = realTimeLineChart();
-    function randomNumberBounds(min, max) {
-      return Math.floor(Math.random() * max) + min;
-    }
-    
-    function seedData() {
-      var now = new Date();
-      for (var i = 0; i < MAX_LENGTH; ++i) {
-        lineArr.push({
-          time: new Date(now.getTime() - ((MAX_LENGTH - i) * duration)),
-          x: 0,
-          y: 0,
-          z: 0
-        });
-      }
-    }
-    
-    function updateData() {
-      var now = new Date();
-      socket.on('data',function(data){
-        value = data;
-      });
-      var lineData = {
-        time: now,
-        //y: 0,
-        x: value
-      };
-      lineArr.push(lineData);
-      if (lineArr.length > 500) {
-        lineArr.shift();
-      }
-      d3.select("#chart").datum(lineArr).call(chart);
-    }
-    
-    function resize() {
-      if (d3.select("#chart svg").empty()) {
-        return;
-      }
-      chart.width(+d3.select("#chart").style("width").replace(/(px)/g, ""));
-      d3.select("#chart").call(chart);
-    }
-    document.addEventListener("DOMContentLoaded", function() {
-      seedData();
-      window.setInterval(updateData, 10);
-      d3.select("#chart").datum(lineArr).call(chart);
-      d3.select(window).on('resize', resize);
-    });
-
-    
-    
-    </script>
-</body>
-</html>
--->
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <title>Realtime Data Line Graph</title>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <meta charset='utf-8' />
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="/scripts/jquery-3.4.1.min.js"></script>
-    <script src="/scripts/jquery-ui.js"></script>
-    <script src="/scripts/script.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="scripts/table.js"></script>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <script>
+<head>
+  <title>Realtime Data Line Graph</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <meta charset='utf-8' />
+  <script src="/scripts/d3.v4.min.js"></script>
+  <script src="/scripts/jquery-3.4.1.min.js"></script>
+  <script src="/scripts/jquery-ui.js"></script>
+  <script src="/scripts/script.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="scripts/table.js"></script>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <script>
     //Jquery events.
-    $(document).ready(function(){
-      $('.clickArea').click(function(event){
+    var graphVar;
+    var vitals = ["TEMP","ECG","RESP"];
+    var vitals2 = ["TEMP"];
+    var vitals3 = ["RESP"];
+    var chart = realTimeLineChart(vitals, 130, 710);
+    var chart2 = realTimeLineChart(vitals2, 130, 710);
+    var chart3 = realTimeLineChart(vitals3, 130, 710);
+    var lineArray = [];
+    var lineArray2 = [];
+    var lineArray3 = [];
+    var graphingIntervals;
+
+    var counter = 0;
+
+    $(document).ready(function () {
+      $('.clickArea').click(function (event) {
         var id = event.target.id;
         var num = parseInt(id);
-        console.log(num);
+        console.log(id);
+        if (isNaN(num)) {
+          //console.log(id.substr(id.length-1))
+          num = parseInt(id.substr(id.length - 1));
+          id = id.substr(id.length - 1);
+        }
         ///EXXXXXPPPPPPPAAAAANNNNNNNNDDDDDDD
-        if ($('#chart'+id).width() == 270){
-          for(i = num+1; i < 12; i++){
+        if ($('#chart' + id).width() == 270) {
+          for (i = num + 1; i < 12; i++) {
             marginTop = (130 * i) + (10 * i);
-            $('#section' + i).animate({"margin-top": marginTop+"px"},380);
+            $('#section' + i).animate({
+              "margin-top": marginTop + "px"
+            }, 380);
           };
-          $('#section'+id).animate({height:"260px"},400,function(){
+          $('#section' + id).animate({
+            height: "260px"
+          }, 400, function () {
             $('#chart-container').animate({
-              'width':'710px',
-              'left':'500'
+              'width': '710px',
+              'left': '500'
             }, 500);
           })
         };
-      
+
 
         //REEEEEEEEEEEEEEEEETRACT
-        if ($('#chart'+id).width() == 710){
-          $('#section'+id).animate({height:"130px"},100);
-          $('#chart-container').animate({'width':'270px'}, 100);
+        if ($('#chart' + id).width() == 710) {
+          $('#section' + id).animate({
+            height: "130px"
+          }, 100);
+          $('#chart-container').animate({
+            'width': '270px'
+          }, 100);
         };
 
-        
+
       });
-      $(".patientName").mouseover(function(){
-        $(this).animate({"font-size":"34px"});
+      $(".patientName").mouseover(function () {
+        $(this).animate({
+          "font-size": "34px"
+        });
         console.log("mouse is over now");
-      }).mouseleave(function(){
-        $(this).animate({"font-size":"32px"})
+      }).mouseleave(function () {
+        $(this).animate({
+          "font-size": "32px"
+        })
+      });
+      
+      $('.switches').click(function () {
+        switch (this.value) {
+          case "ECG":
+            graphVar = "ECG";
+            //window.clearInterval(graphingIntervals);
+            lineArray = [];
+            vitals = ["ECG"];
+            var chart = realTimeLineChart(vitals, 130, 710);
+            seedData(lineArray, 500, vitals);
+            d3.select("#chart1").datum(lineArray).call(chart);
+            break;
+          case "TEMP":
+            graphVar = "TEMP";
+            //window.clearInterval(graphingIntervals);
+            lineArray = [];
+            vitals = ["TEMP"];
+            var chart = realTimeLineChart(vitals, 130, 710);
+            seedData(lineArray, 500, vitals);
+            d3.select("#chart1").datum(lineArray).call(chart);
+            break;
+          case "HR":
+            window.clearInterval(graphingIntervals);
+            lineArray = [];
+            vitals = ["HR"];
+            var chart = realTimeLineChart(vitals, 130, 710);
+            seedData(lineArray, 500, vitals);
+            graphingIntervals = window.setInterval(function () {
+              updateHR(lineArray, chart, '#chart1', randomNumberBounds(1, 50));
+            }, 10);
+            d3.select("#chart1").datum(lineArray).call(chart);
+            break;
+          case "RR":
+            graphVar = "RESP";
+            //window.clearInterval(graphingIntervals);
+            lineArray = [];
+            vitals = ["RESP"];
+            var chart = realTimeLineChart(vitals, 130, 710);
+            seedData(lineArray, 500, vitals);
+            d3.select("#chart1").datum(lineArray).call(chart);
+            break;
+          case "stop":
+            lineArray = [];
+            vitals = [];
+            var chart = "";
+            d3.select("#chart1").datum(lineArray).call(chart);
+            console.log(graphVar);
+            break;
+
+        }
+        console.log(graphVar);
       });
 
-      $('.switches').click(function(){
-        console.log("Button was clicked");
-        console.log(this.value);
-      });
+      // function graphSwitching(graphVar) {
+      //   switch (graphVar) {
+      //     case "ECG":
+      //       lineArray = [];
+      //       vitals = ["ECG"];
+      //       var chart = realTimeLineChart(vitals, 130, 710);
+      //       seedData(lineArray, 500, vitals);
+      //       socket.on('ECG', function(data) {
+      //         updateECG(lineArray, chart, '#chart1', data);
+      //       })
+      //       d3.select("#chart1").datum(lineArray).call(chart);
+      //       break;
+      //     case "TEMP":
+      //       window.clearInterval(graphingIntervals);
+      //       lineArray = [];
+      //       vitals = ["TEMP"];
+      //       var chart = realTimeLineChart(vitals, 130, 710);
+      //       seedData(lineArray, 500, vitals);
+      //       d3.select("#chart1").datum(lineArray).call(chart);
+      //       break;
+      //     case "HR":
+      //       window.clearInterval(graphingIntervals);
+      //       lineArray = [];
+      //       vitals = ["HR"];
+      //       var chart = realTimeLineChart(vitals, 130, 710);
+      //       seedData(lineArray, 500, vitals);
+      //       graphingIntervals = window.setInterval(function () {
+      //         updateHR(lineArray, chart, '#chart1', randomNumberBounds(1, 50));
+      //       }, 10);
+      //       d3.select("#chart1").datum(lineArray).call(chart);
+      //       break;
+      //     case "RR":
+      //     window.clearInterval(graphingIntervals);
+      //       lineArray = [];
+      //       vitals = ["RESP"];
+      //       var chart = realTimeLineChart(vitals, 130, 710);
+      //       seedData(lineArray, 500, vitals);
+      //       graphingIntervals = window.setInterval(function () {
+      //         updateResp(lineArray, chart, '#chart1', randomNumberBounds(1, 50));
+      //       }, 10);
+      //       d3.select("#chart1").datum(lineArray).call(chart);
+      //       break;
+      //   };
+      // };
+      
+      $("#stop").click(function () {
+        window.clearInterval(graphingIntervals);
+      })
+      $("th").click(function () {
+        console.log(this.closest("td").attr("value"));
+        console.log("you pressed a th")
+      })
+
 
     });
-    </script>
-  </head>
 
-  <body>
-    <div id='#stage'>
-      <div class="section" id="section1">
-        <p class="patientName">LILLITH</p>
-        <div id="chart-container">
-          <div class="clickArea" id="1"></div>
-          <div class="chart" id="chart1"></div>
-        
-        </div>
-      </div>
-      <div class="section" id="section2">
-        <div class="chart" id="chart2"></div>
-      </div>
-      <div class="section" id="section3">
-        <div class="chart" id="chart3"></div>
-      </div>
-    </div>
-    <div id="buttons">
-      <button class='switches' value="ECG">ECG Graph</button>
-      <button class='switches' value="TEMP">Temperature Graph</button>
-      <button class='switches' value="HR">Heart Rate Graph</button>
-      <button class='switches' value="RR">Oxygenation Graph</button>
-    </div>
-
-    <script>
-      var vitals = ["ECG"];
-      var vitals2 = ["TEMP"];
-      var vitals3= ["RESP"];
-      var chart = realTimeLineChart(vitals, 130, 710);
-      var chart2 = realTimeLineChart(vitals2,130,710);
-      var chart3 = realTimeLineChart(vitals3,130,710);
-      var lineArray = [];
-      var lineArray2 = [];
-      var lineArray3 = [];
+    document.addEventListener("DOMContentLoaded", function () {
+      // Chart 1
       
-      document.addEventListener("DOMContentLoaded", function () {
-        // Chart 1
-
-        // NEW METHOD
-        seedData(lineArray, 500, vitals);
-        socket.on('ECG',function(data){
-          updateData(lineArray, chart, '#chart1',data);
-        });
-
-        //OLD METHOD
-        // window.setInterval(function () {
-        //   updateData(lineArray, chart, '#chart1', randomNumberBounds(1,50));
-        // }, 10);
-
-        
-        // Chart 2
-        seedData(lineArray2, 30, vitals2);
-        socket.on('temp',function(data){
-          updateTemp(lineArray2, chart2, '#chart2', data);
-        });
-        // Chart 3 
-
-        seedData(lineArray3, 500, vitals3);
-        // window.setInterval(function(){
-        //   updateResp(lineArray3, chart3, '#chart3', randomNumberBounds(0,10000000));
-        // })
-        
-        //NEW
-        socket.on('resp',function(data){
-          updateResp(lineArray3, chart3, '#chart3', data);
-        });
-        
-        d3.select("#chart1").datum(lineArray).call(chart);
-        d3.select("#chart2").datum(lineArray2).call(chart2);
-        d3.select("#chart3").datum(lineArray3).call(chart3);
-        d3.select(window).on('resize', resize);
+      // NEW METHOD
+      seedData(lineArray, 500, vitals);
+      socket.on('ECG', function (data) {
+        if (graphVar == "ECG"){
+          console.log("getting ecg")
+          updateECG(lineArray, chart, '#chart1', data);
+        };
       });
-    </script>
+      socket.on('temp', function (data) {
+        if (graphVar == "TEMP"){
+          console.log("getting temp")
+          updateTemp(lineArray, chart, '#chart1', data);
+        };
+      });
 
-    <!--<script src="scripts/table2.js"></script>-->
-  </body>
+      socket.on('resp', function (data) {
+        if (graphVar == "RESP"){
+        updateResp(lineArray, chart, '#chart1', data);
+        };
+      });
+
+      //OLD METHOD
+      // window.setInterval(function () {
+      //   updateData(lineArray, chart, '#chart1', randomNumberBounds(1,50));
+      // }, 10);
+      $('#ECG').click(function(){
+        console.log("HERE I AMMMMMMMM")
+      });
+
+      // Chart 2
+    
+      // Chart 3 
+
+      // seedData(lineArray3, 500, vitals3);
+      // window.setInterval(function(){
+      //   updateResp(lineArray3, chart3, '#chart3', randomNumberBounds(0,10000000));
+      // })
+
+
+      d3.select("#chart1").datum(lineArray).call(chart);
+      //d3.select("#chart2").datum(lineArray2).call(chart2);
+      d3.select("#chart3").datum(lineArray3).call(chart3);
+      d3.select(window).on('resize', resize);
+    });
+  </script>
+</head>
+
+<body>
+  <div id='#stage'>
+    <div class="section" id="section1">
+      <p class="patientName">LILLITH</p>
+      <div id="chart-container">
+        <div class="clickArea" id="area1"></div>
+        <div class="chart" id="chart1"></div>
+
+      </div>
+    </div>
+    <div class="section" id="section2">
+      <div class="chart" id="chart2"></div>
+    </div>
+    <div class="section" id="section3">
+      <div class="chart" id="chart3"></div>
+    </div>
+  </div>
+  <div id="buttons">
+    <button class='switches' value="ECG">ECG Graph</button>
+    <button class='switches' value="TEMP">Temperature Graph</button>
+    <button class='switches' value="HR">Heart Rate Graph</button>
+    <button class='switches' value="RR">Oxygenation Graph</button>
+    <button class='switches' value="stop">STOP</button>
+  </div>
+  <table>
+    <thead>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Rating</th>
+    </thead>
+    <tbody>
+      <tr>
+        <td value="movie">The Movie</td>
+        <td>This is a movie about making a movie.</td>
+      </tr>
+
+    </tbody>
+
+  </table>
+
+  <!--<script src="scripts/table2.js"></script>-->
+</body>
 
 </html>
