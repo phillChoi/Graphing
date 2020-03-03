@@ -90,6 +90,7 @@
             var chart = realTimeLineChart(vitals, 130, 710);
             seedData(lineArray, 500, vitals);
             d3.select("#chart1").datum(lineArray).call(chart);
+            document.getElementById("title").innerHTML = "ECG";
             break;
           case "TEMP":
             graphVar = "TEMP";
@@ -99,6 +100,7 @@
             var chart = realTimeLineChart(vitals, 130, 710);
             seedData(lineArray, 500, vitals);
             d3.select("#chart1").datum(lineArray).call(chart);
+            document.getElementById("title").innerHTML = "Temperature";
             break;
           case "HR":
             window.clearInterval(graphingIntervals);
@@ -119,6 +121,7 @@
             var chart = realTimeLineChart(vitals, 130, 710);
             seedData(lineArray, 500, vitals);
             d3.select("#chart1").datum(lineArray).call(chart);
+            document.getElementById("title").innerHTML = "Respirations";
             break;
           case "stop":
             lineArray = [];
@@ -204,6 +207,7 @@
           console.log("getting temp")
           updateTemp(lineArray, chart, '#chart1', data);
         };
+        document.getElementById("temperature").innerHTML = data;
       });
 
       socket.on('resp', function (data) {
@@ -243,6 +247,7 @@
     <div class="section" id="section1">
       <p class="patientName">LILLITH</p>
       <div id="chart-container">
+        <p id="title"></p>
         <div class="clickArea" id="area1"></div>
         <div class="chart" id="chart1"></div>
 
@@ -272,6 +277,7 @@
       <tr>
         <td value="movie">The Movie</td>
         <td>This is a movie about making a movie.</td>
+        <td id="temperature"></td>
       </tr>
 
     </tbody>

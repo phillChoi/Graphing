@@ -47,6 +47,13 @@ th, td{
     border: solid 1px black;
 }
 
+#title{
+    position: absolute;
+    left: 50%;
+    width: 100px;
+    margin: 0;
+}
+
 
 
 
