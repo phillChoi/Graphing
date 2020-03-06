@@ -50,8 +50,9 @@ th, td{
 #title{
     position: absolute;
     left: 50%;
-    width: 100px;
+    top: 0;
     margin: 0;
+    transform: translateX(-50%);
 }
 
 
